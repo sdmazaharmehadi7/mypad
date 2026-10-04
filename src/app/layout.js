@@ -62,7 +62,14 @@ export const metadata = {
       'MyPad is a simple, fast way to create and share text pads using a URL. No complicated setup.',
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
   verification: {
     google: 'BSNRaxyNYwPNCYTEiD4No5rRHNVnEBXj_ds-BgLJy38',
@@ -77,7 +84,7 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white text-zinc-900 selection:bg-zinc-200 selection:text-zinc-950 font-sans">
-        {/* Skip to Main Content Link for v Keyboard Accessibility */}
+        {/* Skip to Main Content Link for Keyboard Accessibility */}
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 bg-zinc-950 text-white text-xs font-medium rounded shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-950"
