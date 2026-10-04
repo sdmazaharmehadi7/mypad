@@ -239,7 +239,7 @@ export default function PadEditor({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isSidebarOpen]);
 
-  // Cleanup timers and in-flight requests on unmount
+  // Cleanup timers and in-flight requests on unmountf
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
