@@ -10,8 +10,6 @@ function PadHeader({
   wordCount = 0,
   onToggleSidebar,
   isSidebarOpen = false,
-  connectionState = 'Connected',
-  presenceCount = 1,
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -131,31 +129,6 @@ function PadHeader({
               ) : (
                 <span className={isSaving ? 'text-zinc-500' : 'text-zinc-700'}>
                   {saveStatus}
-                </span>
-              )}
-            </div>
-
-            {/* Realtime Connection & Presence Indicator */}
-            <span className="hidden sm:inline text-zinc-300">•</span>
-            <div className="inline-flex items-center gap-1.5 text-zinc-600">
-              {connectionState === 'Connected' ? (
-                <span className="inline-flex items-center gap-1 text-[11px] text-zinc-600" title={`${presenceCount} ${presenceCount === 1 ? 'person' : 'people'} currently in this pad`}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
-                  <span>{presenceCount} online</span>
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 text-[11px] text-zinc-500" title={`Connection: ${connectionState}`}>
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      connectionState === 'Reconnecting...'
-                        ? 'bg-amber-400 animate-pulse'
-                        : connectionState === 'Offline'
-                        ? 'bg-zinc-400'
-                        : 'bg-zinc-300 animate-pulse'
-                    }`}
-                    aria-hidden="true"
-                  />
-                  <span>{connectionState}</span>
                 </span>
               )}
             </div>

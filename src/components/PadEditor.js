@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import PadHeader from './PadHeader';
 import PadSidebar from './PadSidebar';
-import { usePadSocket } from '@/lib/use-pad-socket';
 
 const DEBOUNCE_DELAY_MS = 650;
 
@@ -151,56 +150,12 @@ export default function PadEditor({
   }, [performSave]);
 
   /**
-   * Handles real-time remote updates received over Socket.IO from peers in the same room.
-   * Updates local state without scheduling a duplicate MongoDB save (the typing peer is saving).
-   * Preserves cursor position if the local user is viewing or focused.
-   */
-  const handleRemoteUpdate = useCallback((remoteText) => {
-    if (remoteText === latestContentRef.current) {
-      return;
-    }
-
-    const textarea = textareaRef.current;
-    let selStart = null;
-    let selEnd = null;
-
-    if (textarea && document.activeElement === textarea) {
-      selStart = textarea.selectionStart;
-      selEnd = textarea.selectionEnd;
-    }
-
-    latestContentRef.current = remoteText;
-    lastSavedContentRef.current = remoteText;
-    setContent(remoteText);
-
-    if (selStart !== null && selEnd !== null) {
-      requestAnimationFrame(() => {
-        if (textareaRef.current) {
-          const newStart = Math.min(selStart, remoteText.length);
-          const newEnd = Math.min(selEnd, remoteText.length);
-          textareaRef.current.setSelectionRange(newStart, newEnd);
-        }
-      });
-    }
-  }, []);
-
-  // Initialize real-time Socket.IO collaboration
-  const { connectionState, presenceCount, sendUpdate } = usePadSocket({
-    canonicalPath,
-    onRemoteUpdate: handleRemoteUpdate,
-  });
-
-  /**
-   * Handles user keystrokes in textarea:
-   * 1. Updates local React state immediately for zero typing latency.
-   * 2. Broadcasts instantaneous update over Socket.IO to peers in the room.
-   * 3. Schedules debounced persistence to MongoDB (single source of truth).
+   * Handles user keystrokes in textarea
    */
   const handleChange = (e) => {
     const newText = e.target.value;
     latestContentRef.current = newText;
     setContent(newText);
-    sendUpdate(newText);
     scheduleSave(newText);
   };
 
@@ -262,8 +217,6 @@ export default function PadEditor({
         wordCount={wordCount}
         onToggleSidebar={handleToggleSidebar}
         isSidebarOpen={isSidebarOpen}
-        connectionState={connectionState}
-        presenceCount={presenceCount}
       />
 
       {/* Main Workspace: Sidebar + Editor */}
@@ -310,8 +263,6 @@ export default function PadEditor({
                 }`}
               />
               {saveStatus}
-              <span className="text-zinc-300">•</span>
-              <span>{presenceCount} online</span>
             </span>
           </div>
         </main>

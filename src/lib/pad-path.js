@@ -211,9 +211,9 @@ export function validatePadPath(pathInput) {
 }
 
 /**
- * Parses a pad path string or segment array and extracts canonical path, room, and segments.
+ * Parses a pad path string or segment array and extracts canonical path, slug, and segments.
  * @param {string|string[]} pathInput
- * @returns {{ isValid: boolean, path: string, room: string, segments: string[], title: string, error?: string }}
+ * @returns {{ isValid: boolean, path: string, slug: string, segments: string[], title: string, error?: string }}
  */
 export function parsePadPath(pathInput) {
   const parsed = Array.isArray(pathInput)
@@ -221,8 +221,7 @@ export function parsePadPath(pathInput) {
     : normalizePathString(pathInput);
   return {
     ...parsed,
-    // Canonical room without leading slash (e.g. "college/ml")
-    room: parsed.segments.join('/'),
+    slug: parsed.segments.join('/'),
   };
 }
 
