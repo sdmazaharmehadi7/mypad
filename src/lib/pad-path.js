@@ -194,3 +194,45 @@ export function getPadBreadcrumbs(segments) {
     };
   });
 }
+
+/**
+ * Validates a pad path string or segment array.
+ * @param {string|string[]} pathInput
+ * @returns {{ isValid: boolean, error?: string }}
+ */
+export function validatePadPath(pathInput) {
+  const parsed = Array.isArray(pathInput)
+    ? normalizePadSegments(pathInput)
+    : normalizePathString(pathInput);
+  return {
+    isValid: parsed.isValid,
+    error: parsed.error,
+  };
+}
+
+/**
+ * Parses a pad path string or segment array and extracts canonical path, room, and segments.
+ * @param {string|string[]} pathInput
+ * @returns {{ isValid: boolean, path: string, room: string, segments: string[], title: string, error?: string }}
+ */
+export function parsePadPath(pathInput) {
+  const parsed = Array.isArray(pathInput)
+    ? normalizePadSegments(pathInput)
+    : normalizePathString(pathInput);
+  return {
+    ...parsed,
+    // Canonical room without leading slash (e.g. "college/ml")
+    room: parsed.segments.join('/'),
+  };
+}
+
+/**
+ * Normalizes a pad path to its canonical representation (e.g. "/college/ml").
+ * Returns an empty string if the path is invalid.
+ * @param {string|string[]} pathInput
+ * @returns {string}
+ */
+export function normalizePadPath(pathInput) {
+  const parsed = parsePadPath(pathInput);
+  return parsed.isValid ? parsed.path : '';
+}
