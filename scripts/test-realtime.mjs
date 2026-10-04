@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const BASE_URL = process.env.TEST_URL || 'http://localhost:3002';
+const BASE_URL = process.env.TEST_URL || 'http://localhost:3000';
 const SOCKET_PATH = '/api/socket.io';
 
 function wait(ms) {

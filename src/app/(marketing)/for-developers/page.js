@@ -72,7 +72,7 @@ export default function ForDevelopersPage() {
         {/* Code Sample Mockup */}
         <div className="rounded-xl border border-zinc-200 bg-zinc-950 text-zinc-300 p-5 font-mono text-xs overflow-x-auto shadow-xs">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800 text-[11px] text-zinc-500 mb-3">
-            <span>mypad.vercel.app/api/v1/auth-notes</span>
+            <span>mypad-org.vercel.app/api/v1/auth-notes</span>
             <span className="text-emerald-500">● Cloud Synced</span>
           </div>
           <p className="text-zinc-400"># Staging Authentication Endpoints</p>

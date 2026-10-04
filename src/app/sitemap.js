@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mypad.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mypad-org.vercel.app';
   const now = new Date();
 
   return [

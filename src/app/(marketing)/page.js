@@ -16,7 +16,7 @@ export const metadata = {
 };
 
 export default function HomePage() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mypad.vercel.app';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mypad-org.vercel.app';
 
   const jsonLd = {
     '@context': 'https://schema.org',

@@ -63,7 +63,7 @@ export default function UseCasesPage() {
         'Transfer text snippets, links, or draft messages between your phone, tablet, and computer in seconds.',
       bullets: [
         'Stop emailing yourself URLs or messaging your own Slack account just to transfer text.',
-        'Open mypad.vercel.app/your-secret-code on your phone, paste text, and open it on your laptop.',
+        'Open mypad-org.vercel.app/your-secret-code on your phone, paste text, and open it on your laptop.',
         'Completely stateless and instant with zero login barriers.',
       ],
       linkText: 'How it works →',

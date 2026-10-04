@@ -9,16 +9,16 @@
  * 6. robots.txt and sitemap.xml
  */
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 const PUBLIC_PAGES = [
-  { path: '/', titleKeyword: 'Simple Shared Text', canonical: 'https://mypad.vercel.app' },
-  { path: '/online-notepad', titleKeyword: 'Free Online Notepad', canonical: 'https://mypad.vercel.app/online-notepad' },
-  { path: '/features', titleKeyword: 'Features', canonical: 'https://mypad.vercel.app/features' },
-  { path: '/how-it-works', titleKeyword: 'How It Works', canonical: 'https://mypad.vercel.app/how-it-works' },
-  { path: '/use-cases', titleKeyword: 'Use Cases', canonical: 'https://mypad.vercel.app/use-cases' },
-  { path: '/for-developers', titleKeyword: 'For Developers', canonical: 'https://mypad.vercel.app/for-developers' },
-  { path: '/for-students', titleKeyword: 'For Students', canonical: 'https://mypad.vercel.app/for-students' },
+  { path: '/', titleKeyword: 'Simple Shared Text', canonical: 'https://mypad-org.vercel.app' },
+  { path: '/online-notepad', titleKeyword: 'Free Online Notepad', canonical: 'https://mypad-org.vercel.app/online-notepad' },
+  { path: '/features', titleKeyword: 'Features', canonical: 'https://mypad-org.vercel.app/features' },
+  { path: '/how-it-works', titleKeyword: 'How It Works', canonical: 'https://mypad-org.vercel.app/how-it-works' },
+  { path: '/use-cases', titleKeyword: 'Use Cases', canonical: 'https://mypad-org.vercel.app/use-cases' },
+  { path: '/for-developers', titleKeyword: 'For Developers', canonical: 'https://mypad-org.vercel.app/for-developers' },
+  { path: '/for-students', titleKeyword: 'For Students', canonical: 'https://mypad-org.vercel.app/for-students' },
 ];
 
 async function verifySeo() {
@@ -87,7 +87,7 @@ async function verifySeo() {
     robotsText.includes('Allow: /') &&
     robotsText.includes('Allow: /online-notepad') &&
     robotsText.includes('Disallow: /api/') &&
-    robotsText.includes('Sitemap: https://mypad.vercel.app/sitemap.xml')
+    robotsText.includes('Sitemap: https://mypad-org.vercel.app/sitemap.xml')
   ) {
     console.log('✓ robots.txt verified with public allows and API disallow.');
   } else {

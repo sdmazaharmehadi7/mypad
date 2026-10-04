@@ -75,7 +75,7 @@ export default function ForStudentsPage() {
             Example: Organic Chemistry Study Group
           </span>
           <p className="text-zinc-800 leading-relaxed">
-            1. Group leader visits <span className="text-zinc-950 font-semibold">mypad.vercel.app/chem201/exam-prep</span>.<br />
+            1. Group leader visits <span className="text-zinc-950 font-semibold">mypad-org.vercel.app/chem201/exam-prep</span>.<br />
             2. Pastes discussion questions and shares the link in the group chat.<br />
             3. Everyone types bullet answers concurrently. Edits save in real time.<br />
             4. Review notes from your phone on the bus ride to campus.

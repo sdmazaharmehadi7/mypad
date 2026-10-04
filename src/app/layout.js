@@ -22,7 +22,7 @@ export const viewport = {
 
 export const metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://mypad.vercel.app'
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://mypad-org.vercel.app'
   ),
   title: {
     default: 'MyPad — Simple Shared Text & Notes',
@@ -49,7 +49,7 @@ export const metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://mypad.vercel.app',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://mypad-org.vercel.app',
     siteName: 'MyPad',
     title: 'MyPad — Simple Shared Text & Notes',
     description:

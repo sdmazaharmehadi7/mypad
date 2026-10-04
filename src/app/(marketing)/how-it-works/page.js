@@ -22,7 +22,7 @@ export default function HowItWorksPage() {
       title: 'Choose your URL path',
       lead: 'Your address bar is your document title and your storage location.',
       description:
-        'Instead of logging in, clicking "New Document", and naming a file, simply navigate to your desired path in your browser (e.g. mypad.vercel.app/standup or mypad.vercel.app/team/backend). The pad is ready for writing immediately.',
+        'Instead of logging in, clicking "New Document", and naming a file, simply navigate to your desired path in your browser (e.g. mypad-org.vercel.app/standup or mypad-org.vercel.app/team/backend). The pad is ready for writing immediately.',
     },
     {
       number: '02',

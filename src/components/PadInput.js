@@ -7,7 +7,7 @@ const SUGGESTIONS = ['notes', 'standup', 'project/api', 'college/math'];
 
 const subscribe = () => () => {};
 const getSnapshot = () => window.location.host;
-const getServerSnapshot = () => 'mypad.vercel.app';
+const getServerSnapshot = () => 'mypad-org.vercel.app';
 
 export default function PadInput() {
   const [padSlug, setPadSlug] = useState('');

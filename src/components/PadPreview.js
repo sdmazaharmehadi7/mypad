@@ -11,7 +11,7 @@ export default function PadPreview() {
               <span className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
             </div>
             <span className="font-mono text-zinc-600 font-medium ml-2">
-              mypad.vercel.app/project/backend
+              mypad-org.vercel.app/project/backend
             </span>
           </div>
 

@@ -87,8 +87,10 @@ export function usePadSocket({ canonicalPath, onRemoteUpdate }) {
   useEffect(() => {
     let isMounted = true;
 
-    // Optional environment variable for external Socket.IO server; defaults to same-origin
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || '';
+    // Optional environment variable for external Socket.IO server; in browser defaults to current origin (production-safe)
+    const socketUrl =
+      process.env.NEXT_PUBLIC_SOCKET_URL ||
+      (typeof window !== 'undefined' ? window.location.origin : '');
 
     async function initializeSocket() {
       // Warm up Next.js Pages API endpoint to ensure Socket.IO is initialized on the server
