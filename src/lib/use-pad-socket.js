@@ -42,8 +42,14 @@ export function usePadSocket({ canonicalPath, onRemoteUpdate }) {
   const [connectionState, setConnectionState] = useState('Connecting...');
   const [presenceCount, setPresenceCount] = useState(1);
 
-  // Stable Client ID for loop prevention
-  const [clientId] = useState(() => createClientId());
+  // Stable Client ID for loop prevention (lazy ref initialized outside render)
+  const clientIdRef = useRef(null);
+  const getClientId = useCallback(() => {
+    if (clientIdRef.current === null) {
+      clientIdRef.current = createClientId();
+    }
+    return clientIdRef.current;
+  }, []);
 
   // Socket instance ref
   const socketRef = useRef(null);
@@ -73,10 +79,10 @@ export function usePadSocket({ canonicalPath, onRemoteUpdate }) {
       type: 'pad:update',
       path: canonicalPath,
       content: newContent,
-      clientId,
+      clientId: getClientId(),
       timestamp: now,
     });
-  }, [canonicalPath, clientId]);
+  }, [canonicalPath, getClientId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -107,6 +113,8 @@ export function usePadSocket({ canonicalPath, onRemoteUpdate }) {
 
       socketRef.current = socket;
 
+      const myClientId = getClientId();
+
       socket.on('connect', () => {
         if (!isMounted) return;
         setConnectionState('Connected');
@@ -114,7 +122,7 @@ export function usePadSocket({ canonicalPath, onRemoteUpdate }) {
         // Join the canonical pad room
         socket.emit('pad:join', {
           path: canonicalPath,
-          clientId,
+          clientId: myClientId,
         });
       });
 
@@ -137,7 +145,7 @@ export function usePadSocket({ canonicalPath, onRemoteUpdate }) {
         if (!isMounted || !payload) return;
 
         // Loop prevention: Ignore updates originating from ourselves
-        if (payload.clientId && payload.clientId === clientId) {
+        if (payload.clientId && payload.clientId === myClientId) {
           return;
         }
 
@@ -174,7 +182,7 @@ export function usePadSocket({ canonicalPath, onRemoteUpdate }) {
         // Re-join the canonical pad room on reconnect
         socket.emit('pad:join', {
           path: canonicalPath,
-          clientId,
+          clientId: myClientId,
         });
       });
 
@@ -208,12 +216,11 @@ export function usePadSocket({ canonicalPath, onRemoteUpdate }) {
         socketRef.current = null;
       }
     };
-  }, [canonicalPath, clientId]);
+  }, [canonicalPath, getClientId]);
 
   return {
     connectionState,
     presenceCount,
     sendUpdate,
-    clientId,
   };
 }

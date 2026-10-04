@@ -232,7 +232,7 @@ export default function PadEditor({
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isSidebarOpen) {
-        setUserSidebarToggle(false);
+        setIsSidebarOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
