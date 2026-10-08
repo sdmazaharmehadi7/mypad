@@ -1,10 +1,19 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #09090b;
   --muted: #71717a;
   --border: #e4e4e7;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --muted: #a1a1aa;
+  --border: #27272a;
 }
 
 @theme inline {
@@ -23,10 +32,44 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* ==========================================================================
+   Cursor Pointer & Interactive Controls
+   ========================================================================== */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[type="button"]:not(:disabled),
+[type="reset"]:not(:disabled),
+[type="submit"]:not(:disabled),
+a[href],
+select:not(:disabled),
+summary,
+label[for],
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+input[type="file"]:not(:disabled),
+.cursor-pointer {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+[type="button"]:disabled,
+[type="submit"]:disabled,
+input:disabled,
+select:disabled,
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
 /* Subtle selection color */
 ::selection {
   background-color: #e4e4e7;
   color: #09090b;
+}
+
+.dark ::selection {
+  background-color: #27272a;
+  color: #fafafa;
 }
 
 /* Thin, minimal functional scrollbar */
@@ -53,3 +96,394 @@ body {
   background-color: #a1a1aa;
 }
 
+.dark .pad-scrollbar {
+  scrollbar-color: #3f3f46 transparent;
+}
+
+.dark .pad-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #3f3f46;
+}
+
+.dark .pad-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #52525b;
+}
+
+/* ==========================================================================
+   Tiptap Editor Typography & Formatting (Apple Notes-style)
+   ========================================================================== */
+
+.tiptap {
+  outline: none;
+  min-height: 100%;
+}
+
+.tiptap p {
+  margin: 0.5rem 0;
+  line-height: 1.7;
+}
+
+.dark .tiptap p {
+  color: #f4f4f5;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #a1a1aa;
+  content: "Start typing your notes, shared text, or code...";
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.dark .tiptap p.is-editor-empty:first-child::before {
+  color: #52525b;
+}
+
+.tiptap h1 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #09090b;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dark .tiptap h1 {
+  color: #fafafa;
+}
+
+.tiptap h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #09090b;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.dark .tiptap h2 {
+  color: #fafafa;
+}
+
+.tiptap h3 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: #09090b;
+  margin-top: 1rem;
+  margin-bottom: 0.375rem;
+}
+
+.dark .tiptap h3 {
+  color: #f4f4f5;
+}
+
+.tiptap ul:not([data-type="taskList"]) {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.tiptap ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.tiptap li {
+  margin: 0.25rem 0;
+  line-height: 1.6;
+}
+
+.dark .tiptap li {
+  color: #f4f4f5;
+}
+
+/* Checklists (Task Lists) */
+.tiptap ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.5rem 0;
+}
+
+.tiptap ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  margin: 0.375rem 0;
+}
+
+.tiptap ul[data-type="taskList"] li > label {
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+  user-select: none;
+}
+
+.tiptap ul[data-type="taskList"] li > label input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: #18181b;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 0.25rem;
+}
+
+.dark .tiptap ul[data-type="taskList"] li > label input[type="checkbox"] {
+  accent-color: #fafafa;
+}
+
+.tiptap ul[data-type="taskList"] li[data-checked="true"] > div {
+  text-decoration: line-through;
+  color: #71717a;
+}
+
+.dark .tiptap ul[data-type="taskList"] li[data-checked="true"] > div {
+  color: #52525b;
+}
+
+.tiptap blockquote {
+  border-left: 3px solid #18181b;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #52525b;
+  font-style: italic;
+}
+
+.dark .tiptap blockquote {
+  border-left-color: #52525b;
+  color: #a1a1aa;
+}
+
+.tiptap hr {
+  border: none;
+  border-top: 1px solid #e4e4e7;
+  margin: 1.5rem 0;
+}
+
+.dark .tiptap hr {
+  border-top-color: #27272a;
+}
+
+.tiptap a {
+  color: #18181b;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: #a1a1aa;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.dark .tiptap a {
+  color: #fafafa;
+  text-decoration-color: #52525b;
+}
+
+.tiptap a:hover {
+  text-decoration-color: #18181b;
+}
+
+.dark .tiptap a:hover {
+  text-decoration-color: #fafafa;
+}
+
+.tiptap code:not(pre code) {
+  background-color: #f4f4f5;
+  color: #09090b;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875em;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  border: 1px solid #e4e4e7;
+}
+
+.dark .tiptap code:not(pre code) {
+  background-color: #18181b;
+  color: #f4f4f5;
+  border-color: #27272a;
+}
+
+/* ==========================================================================
+   Code Block Syntax Highlighting (Light Theme & Dark Theme)
+   ========================================================================== */
+
+/* 1. Light Mode Code Block (Documentation style) */
+.code-block-container {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+.code-block-container pre code {
+  color: #1e293b;
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  tab-size: 4;
+}
+
+/* Light Mode Syntax Tokens */
+.code-block-container .hljs-comment,
+.code-block-container .hljs-quote,
+.code-block-container .hljs-doctag {
+  color: #64748b !important;
+  font-style: italic !important;
+}
+
+.code-block-container .hljs-keyword,
+.code-block-container .hljs-selector-tag {
+  color: #be185d !important; /* Rose / Magenta */
+  font-weight: 500;
+}
+
+.code-block-container .hljs-type,
+.code-block-container .hljs-class,
+.code-block-container .hljs-title.class_,
+.code-block-container .hljs-title.class_.inherited__ {
+  color: #b45309 !important; /* Amber / Gold */
+  font-weight: 600;
+}
+
+.code-block-container .hljs-title.function_,
+.code-block-container .hljs-function,
+.code-block-container .hljs-title {
+  color: #0284c7 !important; /* Vibrant Sky Blue */
+  font-weight: 600;
+}
+
+.code-block-container .hljs-string,
+.code-block-container .hljs-regexp,
+.code-block-container .hljs-addition {
+  color: #15803d !important; /* Forest Green */
+}
+
+.code-block-container .hljs-number,
+.code-block-container .hljs-literal,
+.code-block-container .hljs-boolean {
+  color: #ea580c !important; /* Warm Orange */
+}
+
+.code-block-container .hljs-built_in {
+  color: #0f766e !important; /* Teal */
+}
+
+.code-block-container .hljs-variable,
+.code-block-container .hljs-variable.language_,
+.code-block-container .hljs-params,
+.code-block-container .hljs-template-variable {
+  color: #334155 !important; /* Slate */
+}
+
+.code-block-container .hljs-attr,
+.code-block-container .hljs-attribute {
+  color: #0369a1 !important; /* Sky Blue */
+}
+
+.code-block-container .hljs-tag,
+.code-block-container .hljs-tag .hljs-name,
+.code-block-container .hljs-name {
+  color: #be185d !important; /* Rose */
+  font-weight: 500;
+}
+
+.code-block-container .hljs-meta,
+.code-block-container .hljs-meta-keyword,
+.code-block-container .hljs-meta .hljs-string {
+  color: #7c3aed !important; /* Purple */
+}
+
+.code-block-container .hljs-operator,
+.code-block-container .hljs-punctuation,
+.code-block-container .hljs-subst,
+.code-block-container .hljs-symbol {
+  color: #475569 !important; /* Slate */
+}
+
+/* 2. Dark Mode Code Block (ChatGPT / Modern IDE style) */
+.dark .code-block-container {
+  background-color: #121214 !important;
+  border-color: #27272a !important;
+}
+
+.dark .code-block-container pre code {
+  color: #e4e4e7;
+}
+
+/* Dark Mode Syntax Tokens */
+.dark .code-block-container .hljs-comment,
+.dark .code-block-container .hljs-quote,
+.dark .code-block-container .hljs-doctag {
+  color: #71717a !important;
+  font-style: italic !important;
+}
+
+.dark .code-block-container .hljs-keyword,
+.dark .code-block-container .hljs-selector-tag {
+  color: #f43f5e !important; /* Rose / Ruby */
+  font-weight: 500;
+}
+
+.dark .code-block-container .hljs-type,
+.dark .code-block-container .hljs-class,
+.dark .code-block-container .hljs-title.class_,
+.dark .code-block-container .hljs-title.class_.inherited__ {
+  color: #facc15 !important; /* Amber Gold */
+  font-weight: 600;
+}
+
+.dark .code-block-container .hljs-title.function_,
+.dark .code-block-container .hljs-function,
+.dark .code-block-container .hljs-title {
+  color: #60a5fa !important; /* Electric Blue */
+  font-weight: 600;
+}
+
+.dark .code-block-container .hljs-string,
+.dark .code-block-container .hljs-regexp,
+.dark .code-block-container .hljs-addition {
+  color: #4ade80 !important; /* Emerald Green */
+}
+
+.dark .code-block-container .hljs-number,
+.dark .code-block-container .hljs-literal,
+.dark .code-block-container .hljs-boolean {
+  color: #fb923c !important; /* Warm Amber */
+}
+
+.dark .code-block-container .hljs-built_in {
+  color: #2dd4bf !important; /* Teal */
+}
+
+.dark .code-block-container .hljs-variable,
+.dark .code-block-container .hljs-variable.language_,
+.dark .code-block-container .hljs-params,
+.dark .code-block-container .hljs-template-variable {
+  color: #e2e8f0 !important; /* Slate White */
+}
+
+.dark .code-block-container .hljs-attr,
+.dark .code-block-container .hljs-attribute {
+  color: #38bdf8 !important; /* Cyan / Sky Blue */
+}
+
+.dark .code-block-container .hljs-tag,
+.dark .code-block-container .hljs-tag .hljs-name,
+.dark .code-block-container .hljs-name {
+  color: #f43f5e !important; /* Rose */
+  font-weight: 500;
+}
+
+.dark .code-block-container .hljs-meta,
+.dark .code-block-container .hljs-meta-keyword,
+.dark .code-block-container .hljs-meta .hljs-string {
+  color: #c084fc !important; /* Purple */
+}
+
+.dark .code-block-container .hljs-operator,
+.dark .code-block-container .hljs-punctuation,
+.dark .code-block-container .hljs-subst,
+.dark .code-block-container .hljs-symbol {
+  color: #94a3b8 !important; /* Slate */
+}
+
+.dark .code-block-container .hljs-deletion {
+  color: #f87171 !important;
+  background-color: #450a0a !important;
+}

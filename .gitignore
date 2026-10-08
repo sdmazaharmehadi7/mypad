@@ -24,17 +24,21 @@
 .DS_Store
 *.pem
 
-# debug
+# debug and logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (allow committing .env.example template)
 .env*
+!.env.example
+*.env.local
 
-# vercel
+# vercel & build tools
 .vercel
+.turbo
 
 # typescript
 *.tsbuildinfo

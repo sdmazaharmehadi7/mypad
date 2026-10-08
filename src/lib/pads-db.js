@@ -59,6 +59,7 @@ function serializePad(doc) {
   return {
     path: doc.path,
     content: doc.content ?? '',
+    theme: doc.theme || 'light',
     createdAt: doc.createdAt instanceof Date ? doc.createdAt.toISOString() : doc.createdAt,
     updatedAt: doc.updatedAt instanceof Date ? doc.updatedAt.toISOString() : doc.updatedAt,
   };
@@ -83,7 +84,7 @@ export async function getPadByPath(rawPath) {
       const collection = await getPadsCollection();
       const doc = await collection.findOne(
         { path: norm.path },
-        { projection: { path: 1, content: 1, createdAt: 1, updatedAt: 1, _id: 0 } }
+        { projection: { path: 1, content: 1, theme: 1, createdAt: 1, updatedAt: 1, _id: 0 } }
       );
       return {
         pad: serializePad(doc),
@@ -111,9 +112,10 @@ export async function getPadByPath(rawPath) {
  * it avoids creating empty documents to prevent bot or accidental sprawl.
  * @param {string|string[]} rawPath
  * @param {string} content
+ * @param {string} [theme]
  * @returns {Promise<{ pad: object|null, skipped: boolean, normalizedPath: string, error?: string }>}
  */
-export async function savePadContent(rawPath, content) {
+export async function savePadContent(rawPath, content, theme) {
   const norm = typeof rawPath === 'string' ? normalizePathString(rawPath) : normalizePathString(rawPath.join('/'));
 
   if (!norm.isValid) {
@@ -144,23 +146,29 @@ export async function savePadContent(rawPath, content) {
         };
       }
 
+      const setFields = {
+        content: text,
+        updatedAt: now,
+      };
+      if (theme === 'dark' || theme === 'light') {
+        setFields.theme = theme;
+      }
+
       // Upsert document
       const doc = await collection.findOneAndUpdate(
         { path: norm.path },
         {
-          $set: {
-            content: text,
-            updatedAt: now,
-          },
+          $set: setFields,
           $setOnInsert: {
             path: norm.path,
             createdAt: now,
+            theme: theme === 'dark' ? 'dark' : 'light',
           },
         },
         {
           upsert: true,
           returnDocument: 'after',
-          projection: { path: 1, content: 1, createdAt: 1, updatedAt: 1, _id: 0 },
+          projection: { path: 1, content: 1, theme: 1, createdAt: 1, updatedAt: 1, _id: 0 },
         }
       );
 
@@ -189,6 +197,7 @@ export async function savePadContent(rawPath, content) {
   const updatedDoc = {
     path: norm.path,
     content: text,
+    theme: (theme === 'dark' || theme === 'light') ? theme : (existingMem?.theme || 'light'),
     createdAt: existingMem ? existingMem.createdAt : now,
     updatedAt: now,
   };
@@ -199,6 +208,59 @@ export async function savePadContent(rawPath, content) {
     skipped: false,
     normalizedPath: norm.path,
   };
+}
+
+/**
+ * Saves/updates pad theme preference associated with its pad ID.
+ * @param {string|string[]} rawPath
+ * @param {string} theme
+ * @returns {Promise<{ success: boolean, theme?: string, path?: string, error?: string }>}
+ */
+export async function savePadTheme(rawPath, theme) {
+  const norm = typeof rawPath === 'string' ? normalizePathString(rawPath) : normalizePathString(rawPath.join('/'));
+
+  if (!norm.isValid) {
+    return { error: norm.error };
+  }
+
+  const cleanTheme = theme === 'dark' ? 'dark' : 'light';
+  const now = new Date();
+
+  if (process.env.MONGODB_URI) {
+    try {
+      const collection = await getPadsCollection();
+      await collection.updateOne(
+        { path: norm.path },
+        {
+          $set: { theme: cleanTheme, updatedAt: now },
+          $setOnInsert: { path: norm.path, content: '', createdAt: now },
+        },
+        { upsert: true }
+      );
+      return { success: true, theme: cleanTheme, path: norm.path };
+    } catch (err) {
+      const formatted = formatDbError(err);
+      console.error('MongoDB savePadTheme error:', formatted.message);
+      throw formatted;
+    }
+  }
+
+  // In-memory fallback
+  const existingMem = memoryPadStore.get(norm.path);
+  if (existingMem) {
+    existingMem.theme = cleanTheme;
+    existingMem.updatedAt = now;
+  } else {
+    memoryPadStore.set(norm.path, {
+      path: norm.path,
+      content: '',
+      theme: cleanTheme,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  return { success: true, theme: cleanTheme, path: norm.path };
 }
 
 /**

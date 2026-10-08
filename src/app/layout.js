@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 
 const geistSans = Geist({
@@ -80,14 +81,22 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-zinc-900 selection:bg-zinc-200 selection:text-zinc-950 font-sans">
+      <body className="min-h-full flex flex-col bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-950 dark:selection:text-zinc-100 font-sans transition-colors duration-150">
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=window.location.pathname;var m=['/','/features','/how-it-works','/use-cases','/online-notepad','/for-developers','/for-students'];var norm=p.replace(/\\/+$/,'')||'/';if(m.indexOf(norm)!==-1){document.documentElement.classList.remove('dark');}else{var t=localStorage.getItem('mypad-theme:'+norm);if(t==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}}catch(e){}})();`,
+          }}
+        />
         {/* Skip to Main Content Link for Keyboard Accessibility */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 bg-zinc-950 text-white text-xs font-medium rounded shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-950"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-medium rounded shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-950"
         >
           Skip to main content
         </a>

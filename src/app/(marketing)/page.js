@@ -1,17 +1,22 @@
-import Hero from '@/components/Hero';
-import PadPreview from '@/components/PadPreview';
-import HowItWorks from '@/components/HowItWorks';
-import Features from '@/components/Features';
-import UseCases from '@/components/UseCases';
+import PadInput from '@/components/PadInput';
 
 export const metadata = {
   title: {
     absolute: 'MyPad — Simple Shared Text & Notes',
   },
   description:
-    'MyPad is a simple, fast way to create and share text pads using a URL. No complicated setup, accounts, or friction.',
+    'Create, edit, and collaborate in real-time by simply navigating to any URL. No accounts, no invitations, and zero complicated setup.',
   alternates: {
     canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://mypad-org.vercel.app',
+    siteName: 'MyPad',
+    title: 'MyPad — Simple Shared Text & Notes',
+    description:
+      'Create, edit, and collaborate in real-time by simply navigating to any URL. No accounts, no invitations, and zero complicated setup.',
   },
 };
 
@@ -47,59 +52,30 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex-1 flex flex-col items-center justify-start px-4 sm:px-6 w-full pt-24 sm:pt-28">
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Hero Section with Primary Pad Input */}
-      <Hero />
+      {/* Centered compact tool interface */}
+      <div className="w-full max-w-xl mx-auto text-center">
+        {/* Headline */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-zinc-950 leading-[1.15]">
+          Simple shared text, instantly.
+        </h1>
 
-      {/* Realistic Minimal Pad Interface Demo */}
-      <div className="pb-16 sm:pb-24">
-        <PadPreview />
-      </div>
+        {/* Description */}
+        <p className="mt-3 sm:mt-4 text-base sm:text-lg text-zinc-600 max-w-lg mx-auto font-normal leading-relaxed">
+          Create, edit, and collaborate in real-time by simply navigating to any URL. No accounts, no invitations, and zero complicated setup.
+        </p>
 
-      {/* How It Works */}
-      <HowItWorks />
-
-      {/* Features Grid */}
-      <Features />
-
-      {/* Use Cases */}
-      <UseCases />
-
-      {/* Bottom Minimal Prompt */}
-      <section className="py-16 sm:py-20 border-t border-zinc-200/60 text-center bg-white">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-950">
-            Start writing in seconds.
-          </h2>
-          <p className="mt-3 text-sm text-zinc-600 font-normal">
-            No signup, no configuration, no friction. Just choose a URL and begin.
-          </p>
-          <div className="mt-6 flex justify-center">
-            <a
-              href="#pad-entry"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-white text-xs sm:text-sm font-medium transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-            >
-              <span>Create Your First Pad</span>
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2.5"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </a>
-          </div>
+        {/* Primary Pad Entry Interface */}
+        <div className="mt-6 sm:mt-8">
+          <PadInput />
         </div>
-      </section>
+      </div>
     </div>
   );
 }

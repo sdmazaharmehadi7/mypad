@@ -19,25 +19,11 @@ export default function MobileNav() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
-  // Prevent background scroll when mobile menu is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
-
   const navLinks = [
     { label: 'Online Notepad', href: '/online-notepad' },
     { label: 'Features', href: '/features' },
     { label: 'How it works', href: '/how-it-works' },
     { label: 'Use Cases', href: '/use-cases' },
-    { label: 'For Developers', href: '/for-developers' },
-    { label: 'For Students', href: '/for-students' },
   ];
 
   return (
@@ -78,31 +64,24 @@ export default function MobileNav() {
       {isOpen && (
         <div
           id="mobile-navigation-menu"
-          className="fixed inset-x-0 top-14 bottom-0 z-40 bg-white/95 backdrop-blur-md border-b border-zinc-200 px-6 py-8 flex flex-col justify-between"
+          className="fixed inset-x-0 top-14 bg-white border-b border-zinc-200 px-6 py-6 shadow-xl flex flex-col justify-between z-50 animate-in fade-in slide-in-from-top-1 duration-150"
         >
-          <div className="flex flex-col space-y-3">
+          <nav className="flex flex-col space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="text-base font-medium text-zinc-800 hover:text-zinc-950 py-2 border-b border-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 rounded-xs"
+                className="text-sm font-medium text-zinc-800 hover:text-zinc-950 hover:bg-zinc-50 py-2.5 px-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950"
               >
                 {link.label}
               </Link>
             ))}
-          </div>
+          </nav>
 
-          <div className="pt-6">
-            <Link
-              href="/online-notepad"
-              onClick={() => setIsOpen(false)}
-              className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 transition-colors shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950"
-            >
-              Open a Pad
-            </Link>
-            <p className="mt-3 text-center text-xs text-zinc-500">
-              No account or setup required.
+          <div className="pt-4 mt-3 border-t border-zinc-100">
+            <p className="text-center text-xs font-mono text-zinc-400">
+              Simple shared text, instantly.
             </p>
           </div>
         </div>

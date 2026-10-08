@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getPadByPath, savePadContent } from '@/lib/pads-db';
+import { getPadByPath, savePadContent, savePadTheme } from '@/lib/pads-db';
 
 export async function GET(request) {
   try {
@@ -25,6 +25,7 @@ export async function GET(request) {
           pad: {
             path: normalizedPath,
             content: '',
+            theme: 'light',
             isNew: true,
           },
         },
@@ -54,7 +55,7 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { path, content } = body;
+    const { path, content, theme } = body;
 
     if (!path) {
       return NextResponse.json(
@@ -63,7 +64,19 @@ export async function POST(request) {
       );
     }
 
-    const result = await savePadContent(path, content ?? '');
+    // Dedicated theme update
+    if (content === undefined && theme) {
+      const result = await savePadTheme(path, theme);
+      if (result.error) {
+        return NextResponse.json({ error: result.error }, { status: 400 });
+      }
+      return NextResponse.json(
+        { success: true, theme: result.theme, path: result.path },
+        { status: 200, headers: { 'Cache-Control': 'no-store, max-age=0' } }
+      );
+    }
+
+    const result = await savePadContent(path, content ?? '', theme);
 
     if (result.error) {
       return NextResponse.json({ error: result.error }, { status: 400 });
