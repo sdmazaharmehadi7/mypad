@@ -5,6 +5,29 @@ import { useEditorState } from '@tiptap/react';
 import { isValidUrl } from '@/lib/sanitize';
 import { detectCode } from '@/lib/code-detector';
 
+function formatRedirectUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return '';
+  const lower = trimmed.toLowerCase();
+  if (
+    lower.startsWith('javascript:') ||
+    lower.startsWith('data:') ||
+    lower.startsWith('vbscript:')
+  ) {
+    return '';
+  }
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('mailto:') ||
+    trimmed.startsWith('/')
+  ) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+}
+
 export default function EditorToolbar({ editor }) {
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -63,6 +86,7 @@ export default function EditorToolbar({ editor }) {
           isTaskList: false,
           isBlockquote: false,
           isLink: false,
+          linkHref: '',
         };
       }
 
@@ -82,6 +106,7 @@ export default function EditorToolbar({ editor }) {
         isTaskList: ed.isActive('taskList'),
         isBlockquote: ed.isActive('blockquote'),
         isLink: ed.isActive('link'),
+        linkHref: ed.getAttributes('link').href || '',
       };
     },
   });
@@ -100,6 +125,7 @@ export default function EditorToolbar({ editor }) {
   const isTaskList = editorState ? editorState.isTaskList : (editor ? editor.isActive('taskList') : false);
   const isBlockquote = editorState ? editorState.isBlockquote : (editor ? editor.isActive('blockquote') : false);
   const isLink = editorState ? editorState.isLink : (editor ? editor.isActive('link') : false);
+  const linkHref = editorState ? editorState.linkHref : (editor ? (editor.getAttributes('link').href || '') : '');
 
   // Command execution helper that guarantees the formatting applies strictly to the user's intended selection
   const handleFormat = useCallback(
@@ -169,7 +195,16 @@ export default function EditorToolbar({ editor }) {
       }
     }
 
-    const currentHref = editor.getAttributes('link').href || '';
+    let currentHref = editor.getAttributes('link').href || '';
+    if (!currentHref && target) {
+      try {
+        const $pos = editor.state.doc.resolve(from);
+        const linkMark = $pos.marks().find((m) => m.type.name === 'link');
+        if (linkMark && linkMark.attrs?.href) {
+          currentHref = linkMark.attrs.href;
+        }
+      } catch {}
+    }
     setLinkUrl(currentHref);
     setIsLinkDialogOpen(true);
 
@@ -317,12 +352,13 @@ export default function EditorToolbar({ editor }) {
     setIsLinkDialogOpen(false);
   };
 
-  const handleOpenCurrentUrl = () => {
-    if (linkUrl && isValidUrl(linkUrl)) {
-      let urlToOpen = linkUrl.trim();
-      if (!urlToOpen.startsWith('http://') && !urlToOpen.startsWith('https://') && !urlToOpen.startsWith('/')) {
-        urlToOpen = `https://${urlToOpen}`;
-      }
+  const handleOpenCurrentUrl = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const urlToOpen = formatRedirectUrl(linkUrl || linkHref);
+    if (urlToOpen) {
       window.open(urlToOpen, '_blank', 'noopener,noreferrer');
     }
   };
@@ -600,7 +636,7 @@ export default function EditorToolbar({ editor }) {
             onPointerDown={preventBlur}
             onMouseDown={preventBlur}
             onClick={handleOpenLinkDialog}
-            className={`p-1.5 rounded-md text-xs transition-colors ${
+            className={`p-1.5 rounded-md text-xs transition-colors cursor-pointer ${
               isLink
                 ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950'
                 : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300'
@@ -612,6 +648,21 @@ export default function EditorToolbar({ editor }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.364-3.182l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
             </svg>
           </button>
+          {isLink && (linkHref || linkUrl) && (
+            <a
+              href={formatRedirectUrl(linkHref || linkUrl)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2 py-1 rounded-md text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors inline-flex items-center gap-1 cursor-pointer shrink-0 decoration-transparent"
+              title={`Open ${linkHref || linkUrl} in new tab`}
+              aria-label={`Open link ${linkHref || linkUrl}`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg>
+              <span className="hidden sm:inline text-[11px] font-sans">Open</span>
+            </a>
+          )}
           <button
             type="button"
             onPointerDown={preventBlur}
@@ -671,9 +722,25 @@ export default function EditorToolbar({ editor }) {
 
           <form onSubmit={handleSetLink} className="flex flex-col gap-2.5">
             <div>
-              <label htmlFor="link-url-input" className="block text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mb-1">
-                Destination URL
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label htmlFor="link-url-input" className="block text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+                  Destination URL
+                </label>
+                {formatRedirectUrl(linkUrl || linkHref) && (
+                  <a
+                    href={formatRedirectUrl(linkUrl || linkHref)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                    title={`Open ${formatRedirectUrl(linkUrl || linkHref)} in new tab`}
+                  >
+                    <span>Open in new tab</span>
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                  </a>
+                )}
+              </div>
               <input
                 id="link-url-input"
                 ref={urlInputRef}
@@ -703,35 +770,36 @@ export default function EditorToolbar({ editor }) {
 
             <div className="flex items-center justify-between pt-1 gap-2">
               <div className="flex items-center gap-1.5">
-                {editor.isActive('link') && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={handleOpenCurrentUrl}
-                      className="px-2.5 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg transition-colors flex items-center gap-1"
-                      title="Open link in new tab"
-                    >
-                      <span>Open</span>
-                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleRemoveLink}
-                      className="px-2.5 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
-                    >
-                      Remove
-                    </button>
-                  </>
+                {formatRedirectUrl(linkUrl || linkHref) && (
+                  <a
+                    href={formatRedirectUrl(linkUrl || linkHref)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer decoration-transparent"
+                    title="Open link in new tab"
+                  >
+                    <span>Open</span>
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                  </a>
+                )}
+                {(isLink || (editor && editor.isActive('link'))) && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveLink}
+                    className="px-2.5 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer"
+                  >
+                    Remove
+                  </button>
                 )}
               </div>
 
               <button
                 type="submit"
-                className="ml-auto px-3.5 py-1.5 bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 rounded-lg text-xs font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors shadow-xs"
+                className="ml-auto px-3.5 py-1.5 bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 rounded-lg text-xs font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors shadow-xs cursor-pointer"
               >
-                {editor.isActive('link') ? 'Update Link' : 'Add Link'}
+                {isLink ? 'Update Link' : 'Add Link'}
               </button>
             </div>
           </form>

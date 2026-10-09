@@ -75,15 +75,11 @@ export default function SmartEditor({
         'aria-label': `Document pad editor for ${canonicalPath}`,
       },
       handleClick(view, pos, event) {
-        // Cmd/Ctrl + Click on a link opens it in a new browser tab
-        if (event.metaKey || event.ctrlKey) {
-          const { doc } = view.state;
-          const $pos = doc.resolve(pos);
-          const linkMark = $pos.marks().find((m) => m.type.name === 'link');
-          if (linkMark && linkMark.attrs?.href) {
-            window.open(linkMark.attrs.href, '_blank', 'noopener,noreferrer');
-            return true;
-          }
+        // Open only when exactly clicking on the link element itself
+        const aTag = event.target && event.target.closest ? event.target.closest('a') : null;
+        if (aTag && aTag.href) {
+          window.open(aTag.href, '_blank', 'noopener,noreferrer');
+          return true;
         }
         return false;
       },
